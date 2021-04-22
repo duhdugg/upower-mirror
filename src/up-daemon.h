@@ -68,10 +68,6 @@ UpDeviceList	*up_daemon_get_device_list	(UpDaemon		*daemon);
 gboolean	 up_daemon_startup		(UpDaemon		*daemon,
 						 GDBusConnection 	*connection);
 void		 up_daemon_shutdown		(UpDaemon		*daemon);
-void		 up_daemon_set_lid_is_closed	(UpDaemon		*daemon,
-						 gboolean		 lid_is_closed);
-void		 up_daemon_set_lid_is_present	(UpDaemon		*daemon,
-						 gboolean		 lid_is_present);
 void		 up_daemon_set_on_battery	(UpDaemon		*daemon,
 						 gboolean		 on_battery);
 void		 up_daemon_set_warning_level	(UpDaemon		*daemon,

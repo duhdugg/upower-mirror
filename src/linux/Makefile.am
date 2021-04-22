@@ -34,8 +34,6 @@ libupshared_la_SOURCES =					\
 	up-device-wup.h						\
 	up-device-bluez.c					\
 	up-device-bluez.h					\
-	up-input.c						\
-	up-input.h						\
 	up-backend.c						\
 	up-backend-linux-private.h				\
 	up-native.c						\

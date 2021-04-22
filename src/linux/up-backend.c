@@ -39,7 +39,6 @@
 #include "up-device-wup.h"
 #include "up-device-hid.h"
 #include "up-device-bluez.h"
-#include "up-input.h"
 #include "up-config.h"
 #ifdef HAVE_IDEVICE
 #include "up-device-idevice.h"
@@ -82,14 +81,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (UpBackend, up_backend, G_TYPE_OBJECT)
 static gboolean up_backend_device_add (UpBackend *backend, GUdevDevice *native);
 static void up_backend_device_remove (UpBackend *backend, GUdevDevice *native);
 
-static void
-input_switch_changed_cb (UpInput   *input,
-			 gboolean   switch_value,
-			 UpBackend *backend)
-{
-	up_daemon_set_lid_is_closed (backend->priv->daemon, switch_value);
-}
-
 static gpointer
 is_macbook (gpointer data)
 {
@@ -115,7 +106,6 @@ up_backend_device_new (UpBackend *backend, GUdevDevice *native)
 	const gchar *subsys;
 	const gchar *native_path;
 	UpDevice *device = NULL;
-	UpInput *input;
 	gboolean ret;
 
 	subsys = g_udev_device_get_subsystem (native);
@@ -163,26 +153,6 @@ up_backend_device_new (UpBackend *backend, GUdevDevice *native)
 
 		/* no valid USB object */
 		g_clear_object (&device);
-
-	} else if (g_strcmp0 (subsys, "input") == 0) {
-
-		/* check input device */
-		input = up_input_new ();
-		ret = up_input_coldplug (input, native);
-		if (ret) {
-			/* we now have a lid */
-			up_daemon_set_lid_is_present (backend->priv->daemon, TRUE);
-			g_signal_connect (G_OBJECT (input), "switch-changed",
-					  G_CALLBACK (input_switch_changed_cb), backend);
-			up_daemon_set_lid_is_closed (backend->priv->daemon,
-						     up_input_get_switch_value (input));
-
-			/* not a power device, add it to the managed devices
-			 * and don't return a power device */
-			up_device_list_insert (backend->priv->managed_devices, G_OBJECT (native), G_OBJECT (input));
-			device = NULL;
-		}
-		g_object_unref (input);
 	} else {
 		native_path = g_udev_device_get_sysfs_path (native);
 		g_warning ("native path %s (%s) ignoring", native_path, subsys);
@@ -491,8 +461,8 @@ up_backend_coldplug (UpBackend *backend, UpDaemon *daemon)
 	GList *devices;
 	GList *l;
 	guint i;
-	const gchar *subsystems_wup[] = {"power_supply", "usb", "usbmisc", "tty", "input", NULL};
-	const gchar *subsystems[] = {"power_supply", "usb", "usbmisc", "input", NULL};
+	const gchar *subsystems_wup[] = {"power_supply", "usb", "usbmisc", "tty", NULL};
+	const gchar *subsystems[] = {"power_supply", "usb", "usbmisc", NULL};
 
 	backend->priv->daemon = g_object_ref (daemon);
 	backend->priv->device_list = up_daemon_get_device_list (daemon);

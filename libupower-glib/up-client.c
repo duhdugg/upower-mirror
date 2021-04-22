@@ -63,8 +63,6 @@ enum {
 	PROP_0,
 	PROP_DAEMON_VERSION,
 	PROP_ON_BATTERY,
-	PROP_LID_IS_CLOSED,
-	PROP_LID_IS_PRESENT,
 	PROP_LAST
 };
 
@@ -213,40 +211,6 @@ up_client_get_daemon_version (UpClient *client)
 }
 
 /**
- * up_client_get_lid_is_closed:
- * @client: a #UpClient instance.
- *
- * Get whether the laptop lid is closed.
- *
- * Return value: %TRUE if lid is closed or %FALSE otherwise.
- *
- * Since: 0.9.0
- */
-gboolean
-up_client_get_lid_is_closed (UpClient *client)
-{
-	g_return_val_if_fail (UP_IS_CLIENT (client), FALSE);
-	return up_exported_daemon_get_lid_is_closed (client->priv->proxy);
-}
-
-/**
- * up_client_get_lid_is_present:
- * @client: a #UpClient instance.
- *
- * Get whether a laptop lid is present on this machine.
- *
- * Return value: %TRUE if the machine has a laptop lid
- *
- * Since: 0.9.2
- */
-gboolean
-up_client_get_lid_is_present (UpClient *client)
-{
-	g_return_val_if_fail (UP_IS_CLIENT (client), FALSE);
-	return up_exported_daemon_get_lid_is_present (client->priv->proxy);
-}
-
-/**
  * up_client_get_on_battery:
  * @client: a #UpClient instance.
  *
@@ -339,12 +303,6 @@ up_client_get_property (GObject *object,
 	case PROP_ON_BATTERY:
 		g_value_set_boolean (value, up_exported_daemon_get_on_battery (client->priv->proxy));
 		break;
-	case PROP_LID_IS_CLOSED:
-		g_value_set_boolean (value, up_exported_daemon_get_lid_is_closed (client->priv->proxy));
-		break;
-	case PROP_LID_IS_PRESENT:
-		g_value_set_boolean (value, up_exported_daemon_get_lid_is_present (client->priv->proxy));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -388,34 +346,6 @@ up_client_class_init (UpClientClass *klass)
 					 PROP_ON_BATTERY,
 					 g_param_spec_boolean ("on-battery",
 							       "If the computer is on battery power",
-							       NULL,
-							       FALSE,
-							       G_PARAM_READABLE));
-	/**
-	 * UpClient:lid-is-closed:
-	 *
-	 * If the laptop lid is closed.
-	 *
-	 * Since: 0.9.0
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_LID_IS_CLOSED,
-					 g_param_spec_boolean ("lid-is-closed",
-							       "If the laptop lid is closed",
-							       NULL,
-							       FALSE,
-							       G_PARAM_READABLE));
-	/**
-	 * UpClient:lid-is-present:
-	 *
-	 * If a laptop lid is present.
-	 *
-	 * Since: 0.9.0
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_LID_IS_PRESENT,
-					 g_param_spec_boolean ("lid-is-present",
-							       "If a laptop lid is present",
 							       NULL,
 							       FALSE,
 							       G_PARAM_READABLE));

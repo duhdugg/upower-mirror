@@ -120,21 +120,15 @@ up_client_print (UpClient *client)
 {
 	gchar *daemon_version;
 	gboolean on_battery;
-	gboolean lid_is_closed;
-	gboolean lid_is_present;
 	char *action;
 
 	g_object_get (client,
 		      "daemon-version", &daemon_version,
 		      "on-battery", &on_battery,
-		      "lid-is-closed", &lid_is_closed,
-		      "lid-is-present", &lid_is_present,
 		      NULL);
 
 	g_print ("  daemon-version:  %s\n", daemon_version);
 	g_print ("  on-battery:      %s\n", on_battery ? "yes" : "no");
-	g_print ("  lid-is-closed:   %s\n", lid_is_closed ? "yes" : "no");
-	g_print ("  lid-is-present:  %s\n", lid_is_present ? "yes" : "no");
 	action = up_client_get_critical_action (client);
 	g_print ("  critical-action: %s\n", action);
 	g_free (action);

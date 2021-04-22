@@ -541,42 +541,6 @@ up_daemon_get_device_list (UpDaemon *daemon)
 }
 
 /**
- * up_daemon_set_lid_is_closed:
- **/
-void
-up_daemon_set_lid_is_closed (UpDaemon *daemon, gboolean lid_is_closed)
-{
-	UpDaemonPrivate *priv = daemon->priv;
-
-	/* check if we are ignoring the lid */
-	if (up_config_get_boolean (priv->config, "IgnoreLid")) {
-		g_debug ("ignoring lid state");
-		return;
-	}
-
-	g_debug ("lid_is_closed = %s", lid_is_closed ? "yes" : "no");
-	up_exported_daemon_set_lid_is_closed (UP_EXPORTED_DAEMON (daemon), lid_is_closed);
-}
-
-/**
- * up_daemon_set_lid_is_present:
- **/
-void
-up_daemon_set_lid_is_present (UpDaemon *daemon, gboolean lid_is_present)
-{
-	UpDaemonPrivate *priv = daemon->priv;
-
-	/* check if we are ignoring the lid */
-	if (up_config_get_boolean (priv->config, "IgnoreLid")) {
-		g_debug ("ignoring lid state");
-		return;
-	}
-
-	g_debug ("lid_is_present = %s", lid_is_present ? "yes" : "no");
-	up_exported_daemon_set_lid_is_present (UP_EXPORTED_DAEMON (daemon), lid_is_present);
-}
-
-/**
  * up_daemon_set_on_battery:
  **/
 void

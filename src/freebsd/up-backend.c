@@ -52,7 +52,6 @@ static void	up_backend_finalize	(GObject		*object);
 static gboolean	up_backend_refresh_devices (gpointer user_data);
 static gboolean	up_backend_acpi_devd_notify (UpBackend *backend, const gchar *system, const gchar *subsystem, const gchar *type, const gchar *data);
 static gboolean	up_backend_create_new_device (UpBackend *backend, UpAcpiNative *native);
-static void	up_backend_lid_coldplug (UpBackend *backend);
 
 struct UpBackendPrivate
 {
@@ -139,21 +138,6 @@ up_backend_acpi_devd_notify (UpBackend *backend, const gchar *system, const gcha
 				}
 			}
 		}
-	} else if (!strcmp (subsystem, "Lid")) {
-		gboolean is_present;
-		gboolean is_closed;
-
-		g_object_get (backend->priv->daemon,
-			      "lid-is-present", &is_present, NULL);
-		if (!is_present) {
-			g_warning ("received lid event without a configured lid; cold-plugging one");
-			up_backend_lid_coldplug (backend);
-			/* FALLTHROUGH */
-		}
-
-		is_closed = (data != NULL && !strcmp (data, "notify=0x00")) ? TRUE : FALSE;
-		up_daemon_set_lid_is_closed (backend->priv->daemon, is_closed);
-		goto out;
 	}
 
 	if (native == NULL)
@@ -216,21 +200,6 @@ up_backend_create_new_device (UpBackend *backend, UpAcpiNative *native)
 }
 
 /**
- * up_backend_lid_coldplug:
- **/
-static void
-up_backend_lid_coldplug (UpBackend *backend)
-{
-	gchar *lid_state;
-
-	lid_state = up_get_string_sysctl (NULL, "hw.acpi.lid_switch_state");
-	if (lid_state) {
-		up_daemon_set_lid_is_present (backend->priv->daemon, TRUE);
-	}
-	g_free (lid_state);
-}
-
-/**
  * up_backend_coldplug:
  * @backend: The %UpBackend class instance
  * @daemon: The %UpDaemon controlling instance
@@ -275,8 +244,6 @@ up_backend_coldplug (UpBackend *backend, UpDaemon *daemon)
 			}
 		}
 	}
-
-	up_backend_lid_coldplug (backend);
 
 	acnative = up_acpi_native_new ("hw.acpi.acline");
 	up_backend_create_new_device (backend, acnative);
