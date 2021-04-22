@@ -25,7 +25,7 @@ variables:
     python3-pip
     python3-packaging
     git
-  LAST_ABI_BREAK: "e294444496e8bbcd91a3605874f59562e14c34ec"
+  LAST_ABI_BREAK: "0980d70086c8079e4e406456d10ddbfe0a26454c"
 
 build_stable:
   before_script:
